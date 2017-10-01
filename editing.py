@@ -86,7 +86,7 @@ class MusicBrainzClient(object):
         return self.server + path + query
 
     def _select_form(self, action):
-        self.b.select_form(predicate=lambda f: f.method == "POST" and action in f.action)
+        self.b.select_form(predicate=lambda f: f.method.lower() == "post" and action in f.action)
 
     def login(self, username, password):
         self.b.open(self.url("/login"))
