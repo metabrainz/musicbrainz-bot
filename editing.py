@@ -95,8 +95,10 @@ class MusicBrainzClient(object):
         self.b["password"] = password
         self.b.submit()
         resp = self.b.response()
-        if resp.geturl() != self.url("/user/" + urllib.quote(username)):
-            raise Exception('unable to login')
+        expected = self.url("/user/" + urllib.quote(username))
+        actual = resp.geturl()
+        if actual != expected:
+            raise Exception('unable to login. Ended up on %r instead of %s' % (actual, expected))
 
     # return number of edits that left for today
     def edits_left(self, max_edits=1000):
