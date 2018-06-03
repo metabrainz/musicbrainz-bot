@@ -10,7 +10,7 @@ import json
 import tempfile
 import hashlib
 import base64
-from utils import structureToString, colored_out
+from utils import structureToString, colored_out, bcolors
 from datetime import datetime
 from mbbot.guesscase import guess_artist_sort_name
 
