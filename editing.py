@@ -101,9 +101,9 @@ class MusicBrainzClient(object):
             raise Exception('unable to login. Ended up on %r instead of %s' % (actual, expected))
 
     # return number of edits that left for today
-    def edits_left(self, max_edits=1000):
+    def edits_left_today(self, max_edits=1000):
         if self.editor_id is None:
-            print 'error, pass editor_id to constructor for edits_left()'
+            print 'error, pass editor_id to constructor for edits_left_today()'
             return 0
         today = datetime.utcnow().strftime('%Y-%m-%d')
         kwargs = {
@@ -126,7 +126,39 @@ class MusicBrainzClient(object):
         if not m:
             print 'error, could not determine remaining edits'
             return 0
-        return max_edits - int(re.sub(r'[^0-9]+', '', m.group(1)))
+        return max(0, max_edits - int(re.sub(r'[^0-9]+', '', m.group(1))))
+
+    # return number of edits left globally
+    def edits_left_globally(self, max_edits=2000):
+        if self.editor_id is None:
+            print 'error, pass editor_id to constructor for edits_left_globally()'
+            return 0
+        today = datetime.utcnow().strftime('%Y-%m-%d')
+        kwargs = {
+                'page': '2000',
+                'combinator': 'and',
+                'negation': '0',
+                'conditions.0.field': 'editor',
+                'conditions.0.operator': '=',
+                'conditions.0.name': self.username,
+                'conditions.0.args.0': str(self.editor_id),
+                'conditions.1.field': 'status',
+                'conditions.1.operator': '=',
+                'conditions.1.args': '1'
+        }
+        url = self.url("/search/edits", **kwargs)
+        self.b.open(url)
+        page = self.b.response().read()
+        m = re.search(r'Found (?:at least )?([0-9]+(?:,[0-9]+)?) edits', page)
+        if not m:
+            print 'error, could not determine remaining edits'
+            return 0
+        return max(0, max_edits - int(re.sub(r'[^0-9]+', '', m.group(1))))
+
+    def edits_left(self):
+        left_today = edits_left_today()
+        left_globally = edits_left_globally()
+        return min(left_today, left_globally)
 
     def _extract_mbid(self, entity_type):
         m = re.search(r'/' + entity_type + r'/([0-9a-f-]{36})$', self.b.geturl())
