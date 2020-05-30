@@ -5,19 +5,14 @@ import urllib2
 import time
 import re
 import os
-import random
-import string
 import json
 import tempfile
-import hashlib
-import base64
 from utils import colored_out, bcolors
 from datetime import datetime
 
 # Optional modules
 try:
     from selenium import webdriver
-    from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
