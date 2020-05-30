@@ -719,7 +719,7 @@ class MusicBrainzWebdriverClient(object):
             self.driver.find_element_by_xpath(
                 "//input[contains(@data-bind, 'confirmed')]"
             ).click()
-        except (NoSuchElementException, ElementNotVisibleException) as e:
+        except (NoSuchElementException, ElementNotVisibleException):
             pass
         # Check that there are no preexisting errors that would prevent submitting the changes
         if self._exist_errors_in_release_editor():
