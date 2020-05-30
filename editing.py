@@ -222,7 +222,7 @@ class MusicBrainzClient(object):
         if rel_id:
             dta[prefix + "rels.0.id"] = rel_id
         entities = sorted([entity0, entity1], key=lambda entity: entity['type'])
-        dta.update((prefix + "rels.0.entity." + repr(x)+"." + k, v) for x in xrange(2) for (k, v) in entities[x].iteritems())
+        dta.update((prefix + "rels.0.entity." + repr(x)+"." + k, v) for x in range(2) for (k, v) in entities[x].iteritems())
         dta.update((prefix + "rels.0.attrs." + k, str(v)) for k, v in attributes.items())
         dta.update((prefix + "rels.0.period.begin_date." + k, str(v)) for k, v in begin_date.items())
         dta.update((prefix + "rels.0.period.end_date." + k, str(v)) for k, v in end_date.items())
