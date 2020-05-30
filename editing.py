@@ -151,8 +151,8 @@ class MusicBrainzClient(object):
         return max(0, max_edits - int(re.sub(r'[^0-9]+', '', m.group(1))))
 
     def edits_left(self):
-        left_today = edits_left_today()
-        left_globally = edits_left_globally()
+        left_today = self.edits_left_today()
+        left_globally = self.edits_left_globally()
         return min(left_today, left_globally)
 
     def _extract_mbid(self, entity_type):
