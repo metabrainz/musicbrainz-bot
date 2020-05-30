@@ -128,7 +128,6 @@ class MusicBrainzClient(object):
         if self.editor_id is None:
             print('error, pass editor_id to constructor for edits_left_globally()')
             return 0
-        today = datetime.utcnow().strftime('%Y-%m-%d')
         kwargs = {
                 'page': '2000',
                 'combinator': 'and',
@@ -426,7 +425,6 @@ class MusicBrainzClient(object):
 
     def cancel_edit(self, edit_nr, edit_note=u''):
         self.b.open(self.url("/edit/%s/cancel" % (edit_nr,)))
-        page = self.b.response().read()
         self._select_form("/cancel")
         if edit_note:
             self.b['confirm.edit_note'] = edit_note.encode('utf8')
