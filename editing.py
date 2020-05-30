@@ -1,3 +1,4 @@
+from __future__ import print_function
 import mechanize
 import urllib
 import urllib2
@@ -102,7 +103,7 @@ class MusicBrainzClient(object):
     # return number of edits that left for today
     def edits_left_today(self, max_edits=1000):
         if self.editor_id is None:
-            print 'error, pass editor_id to constructor for edits_left_today()'
+            print('error, pass editor_id to constructor for edits_left_today()')
             return 0
         today = datetime.utcnow().strftime('%Y-%m-%d')
         kwargs = {
@@ -123,14 +124,14 @@ class MusicBrainzClient(object):
         page = self.b.response().read()
         m = re.search(r'Found (?:at least )?([0-9]+(?:,[0-9]+)?) edits', page)
         if not m:
-            print 'error, could not determine remaining edits'
+            print('error, could not determine remaining edits')
             return 0
         return max(0, max_edits - int(re.sub(r'[^0-9]+', '', m.group(1))))
 
     # return number of edits left globally
     def edits_left_globally(self, max_edits=2000):
         if self.editor_id is None:
-            print 'error, pass editor_id to constructor for edits_left_globally()'
+            print('error, pass editor_id to constructor for edits_left_globally()')
             return 0
         today = datetime.utcnow().strftime('%Y-%m-%d')
         kwargs = {
@@ -150,7 +151,7 @@ class MusicBrainzClient(object):
         page = self.b.response().read()
         m = re.search(r'Found (?:at least )?([0-9]+(?:,[0-9]+)?) edits', page)
         if not m:
-            print 'error, could not determine remaining edits'
+            print('error, could not determine remaining edits')
             return 0
         return max(0, max_edits - int(re.sub(r'[^0-9]+', '', m.group(1))))
 
@@ -173,7 +174,7 @@ class MusicBrainzClient(object):
         self.b.submit(name="step_editnote")
         time.sleep(2.0)
         self._select_form("/release")
-        print self.b.response().read()
+        print(self.b.response().read())
         self.b.submit(name="save")
         return self._extract_mbid('release')
 
@@ -251,7 +252,7 @@ class MusicBrainzClient(object):
         if item in update:
             key = "edit-" + entity_type + "." + item + suffix
             if self.b[key] != (inarray and [''] or ''):
-                print " * " + item + " already set, not changing"
+                print(" * " + item + " already set, not changing")
                 return False
             val = (
                 utf8ize and entity_dict[item].encode('utf-8') or str(entity_dict[item]))
@@ -263,7 +264,7 @@ class MusicBrainzClient(object):
         if item in update:
             prefix = "edit-artist.period." + item
             if self.b[prefix + ".year"]:
-                print " * " + item.replace('_', ' ') + " year already set, not changing"
+                print(" * " + item.replace('_', ' ') + " year already set, not changing")
                 return False
             self.b[prefix + ".year"] = str(artist[item + '_year'])
             if artist[item + '_month']:
@@ -320,7 +321,7 @@ class MusicBrainzClient(object):
         self.b.open(self.url("/artist/%s/edit" % (entity_id,)))
         self._select_form("/edit")
         if self.b["edit-artist.type_id"] != ['']:
-            print " * already set, not changing"
+            print(" * already set, not changing")
             return
         self.b["edit-artist.type_id"] = [str(type_id)]
         return self._edit_note_and_auto_editor_and_submit_and_check_response('edit-artist.', auto, edit_note)
@@ -329,10 +330,10 @@ class MusicBrainzClient(object):
         self.b.open(self.url("/url/%s/edit" % (entity_id,)))
         self._select_form("/edit")
         if self.b["edit-url.url"] != str(old_url):
-            print " * value has changed, aborting"
+            print(" * value has changed, aborting")
             return
         if self.b["edit-url.url"] == str(new_url):
-            print " * already set, not changing"
+            print(" * already set, not changing")
             return
         self.b["edit-url.url"] = str(new_url)
         return self._edit_note_and_auto_editor_and_submit_and_check_response('edit-url.', auto, edit_note)
@@ -377,13 +378,13 @@ class MusicBrainzClient(object):
         for k, v in attributes.items():
             self.b.form.find_control(k).readonly = False
             if self.b[k] != v[0] and v[0] is not None:
-                print " * %s has changed to %r, aborting" % (k, self.b[k])
+                print(" * %s has changed to %r, aborting" % (k, self.b[k]))
                 return False
             if self.b[k] != v[1]:
                 changed = True
                 self.b[k] = v[1]
         if not changed:
-            print " * already set, not changing"
+            print(" * already set, not changing")
             return False
         self.b["barcode_confirm"] = ["1"]
         self.b.submit(name="step_editnote")
@@ -487,7 +488,7 @@ class MusicBrainzWebdriverClient(object):
         if textarea is not None:
             textarea.send_keys(edit_note.encode('utf8'))
         else:
-            print " * No textarea found for edit note!"
+            print(" * No textarea found for edit note!")
 
     def _submit_and_wait(self, submitButton):
         submitButton.click()
@@ -547,7 +548,7 @@ class MusicBrainzWebdriverClient(object):
             pass
         # Check that there are no preexisting errors that would prevent submitting the changes
         if self._exist_errors_in_release_editor():
-            print " * can't edit this release, it has preexisting errors"
+            print(" * can't edit this release, it has preexisting errors")
             return False
         return True
 
@@ -565,7 +566,7 @@ class MusicBrainzWebdriverClient(object):
         errorTDs = self.driver.find_elements_by_xpath("//tr[@class='error']//td[contains(@data-bind, 'hasInvalidFormat')]")
         for errorTD in errorTDs:
             if errorTD.is_displayed():
-                print " * has a discid => medium format can't be set to a format that can't have disc IDs"
+                print(" * has a discid => medium format can't be set to a format that can't have disc IDs")
                 return
         # Open Edit Note tab
         self.driver.find_element_by_xpath("//a[@href='#edit-note']").click()
@@ -600,7 +601,7 @@ class MusicBrainzWebdriverClient(object):
                     disc_button.click()
                 for track in medium['tracklist']:
                     if 'id' not in track:
-                        print " * track id is required"
+                        print(" * track id is required")
                         return
                     self.wait.until(EC.presence_of_element_located((By.ID, "track-row-%s" % track['id'])))
                     if 'number' in track:
