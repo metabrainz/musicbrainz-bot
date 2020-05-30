@@ -210,7 +210,7 @@ class MusicBrainzClient(object):
         self, already_done_msg="any changes to the data already present"
     ):
         page = self.b.response().read()
-        if "Thank you, your " not in page:
+        if b"Thank you, your " not in page:
             if not already_done_msg or already_done_msg not in page:
                 raise Exception("unable to post edit")
             else:
