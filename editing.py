@@ -228,12 +228,12 @@ class MusicBrainzClient(object):
         dta.update((prefix + "rels.0.period.end_date." + k, str(v)) for k, v in end_date.items())
         try:
             self.b.open(self.url("/relationship-editor"), data=urllib.urlencode(dta))
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             if e.getcode() != 400:
                 raise Exception('unable to post edit', e)
         try:
             jmsg = json.load(self.b.response())
-        except ValueError, e:
+        except ValueError as e:
             raise Exception('unable to parse response as JSON', e)
         if not jmsg.has_key('edits') or jmsg.has_key('error'):
             raise Exception('unable to post edit', jmsg)
