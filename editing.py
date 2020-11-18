@@ -214,7 +214,7 @@ class MusicBrainzClient(object):
         begin_date={},
         end_date={},
     ):
-        if (action == "edit" or action == "delete") and rel_id is None:
+        if (action == "edit" or action == "remove") and rel_id is None:
             raise Exception(
                 "Can" "t " + action + " relationship: no Id has been provided"
             )
@@ -430,19 +430,30 @@ class MusicBrainzClient(object):
             end_date,
         )
 
-    def remove_relationship(self, rel_id, entity0_type, entity1_type, edit_note):
-        self.b.open(
-            self.url(
-                "/edit/relationship/delete",
-                id=str(rel_id),
-                type0=entity0_type,
-                type1=entity1_type,
-            )
+    def remove_relationship(
+        self,
+        rel_id,
+        entity0,
+        entity1,
+        link_type,
+        attributes,
+        begin_date,
+        end_date,
+        edit_note,
+        auto=False,
+    ):
+        return self._relationship_editor_webservice_action(
+            "remove",
+            rel_id,
+            link_type,
+            edit_note,
+            auto,
+            entity0,
+            entity1,
+            attributes,
+            begin_date,
+            end_date,
         )
-        self._select_form("/edit")
-        self.b["confirm.edit_note"] = edit_note.encode("utf8")
-        self.b.submit()
-        self._check_response(None)
 
     def merge(self, entity_type, entity_ids, target_id, edit_note):
         params = [("add-to-merge", id) for id in entity_ids]
