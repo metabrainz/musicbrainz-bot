@@ -12,7 +12,6 @@ import hashlib
 import base64
 from utils import structureToString, colored_out, bcolors
 from datetime import datetime
-from mbbot.guesscase import guess_artist_sort_name
 
 # Optional modules
 try:
@@ -182,7 +181,7 @@ class MusicBrainzClient(object):
         self.b.open(self.url("/artist/create"))
         self._select_form("/artist/create")
         self.b["edit-artist.name"] = artist['name']
-        self.b["edit-artist.sort_name"] = artist.get('sort_name', guess_artist_sort_name(artist['name']))
+        self.b["edit-artist.sort_name"] = artist['sort_name']
         self.b["edit-artist.edit_note"] = edit_note.encode('utf8')
         self.b.submit()
         return self._extract_mbid('artist')
