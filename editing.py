@@ -46,7 +46,7 @@ def album_to_form(album):
 
 class MusicBrainzClient(object):
     def __init__(
-        self, username, password, server="http://musicbrainz.org", editor_id=None
+        self, username, password, server="https://musicbrainz.org", editor_id=None
     ):
         self.server = server
         self.username = username
