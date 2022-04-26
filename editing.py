@@ -1,7 +1,5 @@
-from __future__ import print_function
 import mechanize
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
 import time
 import re
 import json
@@ -65,8 +63,8 @@ class MusicBrainzClient(object):
     def url(self, path, **kwargs):
         query = ""
         if kwargs:
-            query = "?" + urllib.urlencode(
-                [(k, v.encode("utf8")) for (k, v) in kwargs.items()]
+            query = "?" + urllib.parse.urlencode(
+                [(k, v.encode("utf8")) for (k, v) in list(kwargs.items())]
             )
         return self.server + path + query
 
@@ -82,7 +80,7 @@ class MusicBrainzClient(object):
         self.b["password"] = password
         self.b.submit()
         resp = self.b.response()
-        expected = self.url("/user/" + urllib.quote(username))
+        expected = self.url("/user/" + urllib.parse.quote(username))
         actual = resp.geturl()
         if actual != expected:
             raise Exception(
@@ -156,7 +154,7 @@ class MusicBrainzClient(object):
 
     def add_release(self, album, edit_note, auto=False):
         form = album_to_form(album)
-        self.b.open(self.url("/release/add"), urllib.urlencode(form))
+        self.b.open(self.url("/release/add"), urllib.parse.urlencode(form))
         time.sleep(2.0)
         self._select_form("/release")
         self.b.submit(name="step_editnote")
@@ -233,29 +231,29 @@ class MusicBrainzClient(object):
         dta.update(
             (prefix + "rels.0.entity." + repr(x) + "." + k, v)
             for x in range(2)
-            for (k, v) in entities[x].iteritems()
+            for (k, v) in entities[x].items()
         )
         dta.update(
-            (prefix + "rels.0.attrs." + k, str(v)) for k, v in attributes.items()
+            (prefix + "rels.0.attrs." + k, str(v)) for k, v in list(attributes.items())
         )
         dta.update(
             (prefix + "rels.0.period.begin_date." + k, str(v))
-            for k, v in begin_date.items()
+            for k, v in list(begin_date.items())
         )
         dta.update(
             (prefix + "rels.0.period.end_date." + k, str(v))
-            for k, v in end_date.items()
+            for k, v in list(end_date.items())
         )
         try:
-            self.b.open(self.url("/relationship-editor"), data=urllib.urlencode(dta))
-        except urllib2.HTTPError as e:
+            self.b.open(self.url("/relationship-editor"), data=urllib.parse.urlencode(dta))
+        except urllib.error.HTTPError as e:
             if e.getcode() != 400:
                 raise Exception("unable to post edit", e)
         try:
             jmsg = json.load(self.b.response())
         except ValueError as e:
             raise Exception("unable to parse response as JSON", e)
-        if not jmsg.has_key("edits") or jmsg.has_key("error"):
+        if "edits" not in jmsg or "error" in jmsg:
             raise Exception("unable to post edit", jmsg)
         else:
             if jmsg["edits"][0]["message"] == "no changes":
@@ -448,7 +446,7 @@ class MusicBrainzClient(object):
 
     def merge(self, entity_type, entity_ids, target_id, edit_note):
         params = [("add-to-merge", id) for id in entity_ids]
-        self.b.open(self.url("/%s/merge_queue" % entity_type), urllib.urlencode(params))
+        self.b.open(self.url("/%s/merge_queue" % entity_type), urllib.parse.urlencode(params))
         page = self.b.response().read()
         if "You are about to merge" not in page:
             raise Exception("unable to add items to merge queue")
@@ -460,14 +458,14 @@ class MusicBrainzClient(object):
         }
         for idx, val in enumerate(entity_ids):
             params["merge.merging.%s" % idx] = val
-        self.b.open(self.url("/%s/merge" % entity_type), urllib.urlencode(params))
+        self.b.open(self.url("/%s/merge" % entity_type), urllib.parse.urlencode(params))
         self._check_response(None)
 
     def _edit_release_information(self, entity_id, attributes, edit_note, auto=False):
         self.b.open(self.url("/release/%s/edit" % (entity_id,)))
         self._select_form("/edit")
         changed = False
-        for k, v in attributes.items():
+        for k, v in list(attributes.items()):
             self.b.form.find_control(k).readonly = False
             if self.b[k] != v[0] and v[0] is not None:
                 print(" * %s has changed to %r, aborting" % (k, self.b[k]))
@@ -550,7 +548,7 @@ class MusicBrainzClient(object):
                 break
         self.b.submit()
 
-    def cancel_edit(self, edit_nr, edit_note=u""):
+    def cancel_edit(self, edit_nr, edit_note=""):
         self.b.open(self.url("/edit/%s/cancel" % (edit_nr,)))
         self._select_form("/cancel")
         if edit_note:
