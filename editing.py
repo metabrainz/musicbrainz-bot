@@ -108,7 +108,7 @@ class MusicBrainzClient(object):
         }
         url = self.url("/search/edits", **kwargs)
         self.b.open(url)
-        page = self.b.response().read()
+        page = self.b.response().read().decode("utf-8")
         m = re.search(r"Found (?:at least )?([0-9]+(?:,[0-9]+)?) edits", page)
         if not m:
             print("error, could not determine remaining edits")
@@ -134,7 +134,7 @@ class MusicBrainzClient(object):
         }
         url = self.url("/search/edits", **kwargs)
         self.b.open(url)
-        page = self.b.response().read()
+        page = self.b.response().read().decode("utf-8")
         m = re.search(r"Found (?:at least )?([0-9]+(?:,[0-9]+)?) edits", page)
         if not m:
             print("error, could not determine remaining edits")
@@ -182,8 +182,8 @@ class MusicBrainzClient(object):
     def _check_response(
         self, already_done_msg="any changes to the data already present"
     ):
-        page = self.b.response().read()
-        if b"Thank you, your " not in page:
+        page = self.b.response().read().decode("utf-8")
+        if "Thank you, your " not in page:
             if not already_done_msg or already_done_msg not in page:
                 raise Exception("unable to post edit")
             else:
@@ -472,7 +472,7 @@ class MusicBrainzClient(object):
         self.b.open(
             self.url("/%s/merge_queue" % entity_type), urllib.parse.urlencode(params)
         )
-        page = self.b.response().read()
+        page = self.b.response().read().decode("utf-8")
         if "You are about to merge" not in page:
             raise Exception("unable to add items to merge queue")
 
@@ -503,7 +503,6 @@ class MusicBrainzClient(object):
             return False
         self.b["barcode_confirm"] = ["1"]
         self.b.submit(name="step_editnote")
-        page = self.b.response().read()
         self._select_form("/edit")
         try:
             self.b["edit_note"] = edit_note.encode("utf8")
@@ -511,7 +510,7 @@ class MusicBrainzClient(object):
             raise Exception("unable to post edit")
         self._as_auto_editor("", auto)
         self.b.submit(name="save")
-        page = self.b.response().read()
+        page = self.b.response().read().decode("utf-8")
         if "Release information" not in page:
             raise Exception("unable to post edit")
         return True
@@ -558,7 +557,7 @@ class MusicBrainzClient(object):
         as second argument, and determines if the note should be added to this
         edit."""
         self.b.open(self.url("/user/%s/edits" % (self.username,)))
-        page = self.b.response().read()
+        page = self.b.response().read().decode("utf-8")
         self._select_form("/edit")
         edits = re.findall(
             r'<h2><a href="'
