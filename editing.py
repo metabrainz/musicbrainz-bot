@@ -11,7 +11,7 @@ import json
 import tempfile
 import hashlib
 import base64
-from utils import structureToString, colored_out, bcolors
+from utils import colored_out, bcolors
 from datetime import datetime
 
 # Optional modules

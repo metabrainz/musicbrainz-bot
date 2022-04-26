@@ -26,24 +26,3 @@ def get_page_content_from_cache(title, wp_lang):
     file = os.path.join('wiki-cache', wp_lang, key[0], key)
     if os.path.exists(file):
         return open(file).read().decode('utf8')
-
-
-def structureToString(obj):
-    if obj is None:
-        return ''
-    elif isinstance (obj, (int, float)):
-        return str(obj)
-    elif isinstance (obj, (str)):
-        return obj
-    elif isinstance (obj, (unicode)):
-        obj.encode('utf8')
-    elif isinstance (obj, (list, tuple)):
-        ret = []
-        for item in obj:
-            ret.append(structureToString(item))
-        return '[' + ",".join(ret) + ']'
-    else:
-        ret = []
-        for key in sorted(obj.iterkeys()):
-            ret.append("%s:%s" % (key, structureToString(obj[key])))
-        return '{' + ",".join(ret) + '}'
