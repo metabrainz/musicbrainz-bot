@@ -245,7 +245,9 @@ class MusicBrainzClient(object):
             for k, v in list(end_date.items())
         )
         try:
-            self.b.open(self.url("/relationship-editor"), data=urllib.parse.urlencode(dta))
+            self.b.open(
+                self.url("/relationship-editor"), data=urllib.parse.urlencode(dta)
+            )
         except urllib.error.HTTPError as e:
             if e.getcode() != 400:
                 raise Exception("unable to post edit", e)
@@ -256,7 +258,10 @@ class MusicBrainzClient(object):
         if "edits" not in jmsg or "error" in jmsg:
             raise Exception("unable to post edit", jmsg)
         else:
-            if jmsg["edits"][0]["message"] == "no changes":
+            if (
+                "message" in jmsg["edits"][0]
+                and jmsg["edits"][0]["message"] == "no changes"
+            ):
                 return False
         return True
 
@@ -457,7 +462,9 @@ class MusicBrainzClient(object):
 
     def merge(self, entity_type, entity_ids, target_id, edit_note):
         params = [("add-to-merge", id) for id in entity_ids]
-        self.b.open(self.url("/%s/merge_queue" % entity_type), urllib.parse.urlencode(params))
+        self.b.open(
+            self.url("/%s/merge_queue" % entity_type), urllib.parse.urlencode(params)
+        )
         page = self.b.response().read()
         if "You are about to merge" not in page:
             raise Exception("unable to add items to merge queue")
