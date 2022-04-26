@@ -213,6 +213,7 @@ class MusicBrainzClient(object):
         attributes={},
         begin_date={},
         end_date={},
+        ended=False,
     ):
         if (action == "edit" or action == "remove") and rel_id is None:
             raise Exception(
@@ -244,6 +245,8 @@ class MusicBrainzClient(object):
             (prefix + "rels.0.period.end_date." + k, str(v))
             for k, v in list(end_date.items())
         )
+        if ended is True:
+            dta[prefix + "rels.0.period.ended"] = "true"
         try:
             self.b.open(
                 self.url("/relationship-editor"), data=urllib.parse.urlencode(dta)
@@ -419,6 +422,7 @@ class MusicBrainzClient(object):
         attributes,
         begin_date,
         end_date,
+        ended,
         edit_note,
         auto=False,
     ):
@@ -433,6 +437,7 @@ class MusicBrainzClient(object):
             attributes,
             begin_date,
             end_date,
+            ended,
         )
 
     def remove_relationship(
@@ -444,6 +449,7 @@ class MusicBrainzClient(object):
         attributes,
         begin_date,
         end_date,
+        ended,
         edit_note,
         auto=False,
     ):
@@ -458,6 +464,7 @@ class MusicBrainzClient(object):
             attributes,
             begin_date,
             end_date,
+            ended,
         )
 
     def merge(self, entity_type, entity_ids, target_id, edit_note):
