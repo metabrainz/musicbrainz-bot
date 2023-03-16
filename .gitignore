@@ -3,9 +3,11 @@ config.py
 *latest-all-titles-in-ns0
 env/
 venv/
+.vscode/
 
 /solr
 /wiki-cache
 /acc-cache
 /caa-cache
 *.db
+__pycache__
