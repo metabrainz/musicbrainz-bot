@@ -2,7 +2,26 @@ MB_SITE = 'https://test.musicbrainz.org'
 MB_USERNAME = 'xxx'
 MB_PASSWORD = 'xxx'
 
-MB_DB = 'postgresql://musicbrainz@127.0.0.1:5432/musicbrainz'
+# Test Database
+TEST_USERNAME = "musicbrainz"
+TEST_PASSWD = "musicbrainz"
+TEST_HOST = "localhost"
+TEST_PORT = "5432"
+TEST_DB_NAME = "musicbrainz_test"
+
+DB_USERNAME = "musicbrainz"
+DB_PASSWD = "musicbrainz"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "musicbrainz_db"
+
+MB_TEST_DB = (
+    f"postgresql://{TEST_USERNAME}:{TEST_PASSWD}@{TEST_HOST}:{TEST_PORT}/{TEST_DB_NAME}"
+)
+MB_DB = (
+    f"postgresql://{DB_USERNAME}:{DB_PASSWD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+
 BOT_SCHEMA_DB = 'mbbot'
 
 WWW_USER_AGENT = None
