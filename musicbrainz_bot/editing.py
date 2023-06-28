@@ -131,7 +131,12 @@ def album_to_form(album):
 
 class MusicBrainzClient(object):
     def __init__(
-        self, username, password, server="https://musicbrainz.org", editor_id=None
+        self,
+        username,
+        password,
+        server="https://musicbrainz.org",
+        editor_id=None,
+        use_test_db=False,
     ):
         self.server = server
         self.username = username
@@ -141,8 +146,11 @@ class MusicBrainzClient(object):
         self.b.set_debug_redirects(False)
         self.b.set_debug_http(False)
         self.b.addheaders = [
-            ("User-agent", "musicbrainz-bot/1.0 ( %s/user/%s )" % (server, username))
+            ("User-agent", "musicbrainz-bot/1.0 ( %s/user/%s )" % (server, username)),
         ]
+        if use_test_db:
+            self.b.addheaders.append(("mb-set-database", "TEST"))
+
         self.login(username, password)
 
     def url(self, path, **kwargs):
