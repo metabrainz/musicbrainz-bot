@@ -26,3 +26,8 @@ def test_DB_connection() -> None:
     """Test the connection to the main database."""
     result = make_connection(use_test_db=False)
     assert result is True, "Connection to the main database failed."
+
+
+if __name__ == "__main__":
+    test_TEST_DB_connection()
+    test_DB_connection()

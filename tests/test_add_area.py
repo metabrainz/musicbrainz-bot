@@ -46,3 +46,7 @@ def _add_area():
     area_mbid = mb.add_area(area, edit_note=edit_note)
 
     return area_mbid
+
+
+if __name__ == "__main__":
+    test_add_area()
