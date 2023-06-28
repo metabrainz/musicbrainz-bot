@@ -12,6 +12,89 @@ def format_time(secs):
     return "%0d:%02d" % (secs // 60, secs % 60)
 
 
+def create_payload(template: dict, prefix: str, required_fields: list) -> dict:
+    """Create a payload from a template and a list of required fields.
+
+    Args:
+        template (dict): a dictionary of fields (keys) and their respective values
+        prefix (str): a string that will be appended to each key in the template dict.
+                    Used to convert keys to their respective id it's HTML form.
+        required_fields (list): a list of strings (dict keys) of required fields
+
+    Raises:
+        Exception: Missing required field - if a required field is None
+
+    Returns:
+        dict: A dictionary of well-formatted fields and values based on template.
+
+    e.g.
+    template = {
+        "name": 'foo',
+        "comment": 'bar',
+        "type_id": 3,
+        "edit_note": 'lorem ipsum',
+        "iso_3166_1": None,
+        "iso_3166_2": None,
+        "iso_3166_3": ['ABC', 'EFG'],
+        "url": [
+            {
+                "text": "https://www.wikidata.org/wiki/Q152",
+                "link_type_id": 358,
+            }
+        ],
+    }
+
+    # for prefix set to 'edit-area':
+    payload = {
+        'edit-area.name': 'foo',
+        'edit-area.comment': 'bar',
+        'edit-area.type_id': '3',
+        'edit-area.edit_note': 'lorem ipsum',
+        'edit-area.iso_3166_3.0': 'ABC',
+        'edit-area.iso_3166_3.1': 'EFG',
+        'edit-area.url.0.text': 'https://www.wikidata.org/wiki/Q152',
+        'edit-area.url.0.link_type_id': '358',
+    }
+    """
+
+    payload = {}
+    # e.g. field = "edit-area.name", value = "Japan"
+    for field, value in template.items():
+        field = prefix + "." + field
+        # If none, either skip or raise error
+        if value is None:
+            if field in required_fields:
+                raise Exception("Missing required field: " + field)
+            else:
+                pass
+
+        # Check if value is iterable
+        elif isinstance(value, list):
+            # e.g. value = ["JP", "JPN"], value_in_list = "JP"
+            for i, value_in_list in enumerate(value):
+                # Expand field for list of strings (used for ISO codes)
+                if isinstance(value_in_list, str):
+                    # e.g. field = "edit-area.iso_3166_1" field_extension = "edit-area.iso_3166_1.0"
+                    field_extension = f"{field}.{i}"
+                    payload[field_extension] = value_in_list
+
+                # Expand field for list of dicts (used for external links / url)
+                if isinstance(value_in_list, dict):
+                    # e.g. value_in_dict = {"url": "https://www.example.com", "link_type": 1}
+                    # e.g. field = "edit-area.url.0", field_subextension = "edit-area.url.0.url"
+                    for (
+                        field_subextension,
+                        value_in_dict,
+                    ) in value_in_list.items():
+                        field_extension = f"{field}.{i}.{field_subextension}"
+                        payload[field_extension] = value_in_dict
+
+        else:
+            payload[field] = value
+
+    return payload
+
+
 def album_to_form(album):
     form = {}
     form["artist_credit.names.0.artist.name"] = album["artist"]
@@ -174,6 +257,51 @@ class MusicBrainzClient(object):
         self.b["edit-artist.edit_note"] = edit_note.encode("utf8")
         self.b.submit()
         return self._extract_mbid("artist")
+
+    def add_area(self, area: dict, edit_note: str, auto=False) -> str:
+        """A method to add a new area to MusicBrainz
+
+        Args:
+            area (dict): a dictionary containing the area's data (format below)
+            edit_note (str): edit note
+            auto (bool, optional): Marks if an edit is 'votable' or 'auto-edit'. Defaults to False.
+
+        Returns:
+            str: returns a area MBID of the newly created area.
+
+        Note:
+            Unlike other methods, this one directly requests page using
+            mechanize.Requests to overcome mechanize's lack of javascript support
+
+            input dict format:
+            area = {
+                "name": "foo",
+                "comment": "bar", #a.k.a disambiguation
+                "type": "3",
+                "iso_3166_1": None,
+                "iso_3166_2": None,
+                "iso_3166_3": ["XXAM"],
+                "url": [
+                    {
+                        "text": "https://www.wikidata.org/wiki/Q152",
+                        "link_type_id": 358,
+                    },
+                ],
+            }
+        """
+
+        # update the area dictionary to include edit_note with the key "edit_note"
+        area.update({"edit_note": edit_note})
+
+        required_fields = ["name"]
+        payload = create_payload(area, "edit-area", required_fields)
+
+        self.b.open(
+            self.url("/area/create"),
+            data=urllib.parse.urlencode(payload).encode("utf-8"),
+        )
+
+        return self._extract_mbid("area")
 
     def _as_auto_editor(self, prefix, auto):
         try:
