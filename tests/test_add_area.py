@@ -3,40 +3,37 @@
 from musicbrainz_bot.editing import MusicBrainzClient
 import musicbrainz_bot.config as cfg
 import mechanize
+import pytest
 
 
-def test_add_area():
-    try:
-        area_mbid = _add_area()
-        assert area_mbid is not None, "Area MBID is None"
-    except Exception as e:
-        raise Exception(e)
-
-
-def _add_area():
+@pytest.fixture(scope="function")
+def mb_client():
     mb = MusicBrainzClient(
         cfg.MB_USERNAME, cfg.MB_PASSWORD, cfg.MB_SITE, use_test_db=True
     )
+    return mb
 
+
+@pytest.fixture(scope="function")
+def browser():
     browser = mechanize.Browser()
     browser.set_handle_robots(False)
     browser.set_debug_redirects(False)
     browser.set_debug_http(False)
+    return browser
 
+
+def _add_area(mb, browser):
     area = {
-        "name": "updating add_area() to remove 'data_template'",
+        "name": "test_area2",
         "comment": "disambiguation_test",
         "type": "3",
         "iso_3166_1": None,
         "iso_3166_2": None,
-        "iso_3166_3": ["XXXA"],
+        "iso_3166_3": None,
         "url": [
             {
                 "text": "https://www.wikidata.org/wiki/Q152",
-                "link_type_id": 358,
-            },
-            {
-                "text": "https://www.wikidata.org/wiki/Q1494",
                 "link_type_id": 358,
             },
         ],
@@ -48,5 +45,17 @@ def _add_area():
     return area_mbid
 
 
+def test_add_area(mb_client, browser, reset_db):
+    try:
+        area_mbid = _add_area(mb_client, browser)
+        assert area_mbid is not None, "Area MBID is None"
+        print(
+            f"""Area Generated with MBID: {area_mbid}
+Link: https://localhost:5000/area/{area_mbid}"""
+        )
+    except Exception as e:
+        pytest.fail(str(e))
+
+
 if __name__ == "__main__":
-    test_add_area()
+    pytest.main([__file__])
