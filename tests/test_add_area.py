@@ -25,12 +25,12 @@ def browser():
 
 def _add_area(mb, browser):
     area = {
-        "name": "test_area2",
-        "comment": "disambiguation_test",
+        "name": "test_area",
+        "comment": "disambiguation_comment",
         "type": "3",
-        "iso_3166_1": None,
-        "iso_3166_2": None,
-        "iso_3166_3": None,
+        "iso_3166_1": ["XX"],
+        "iso_3166_2": ["XX-A"],
+        "iso_3166_3": ["XXXA"],
         "url": [
             {
                 "text": "https://www.wikidata.org/wiki/Q152",
