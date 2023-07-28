@@ -62,7 +62,7 @@ def delete_user(
     """
     with pg.connect(db_URI) as conn:
         cur = conn.cursor()
-        query = "DELETE FROM editor " "WHERE id = %s;"
+        query = "DELETE FROM editor WHERE id = %s;"
         values = (id,)
         cur.execute(query, values)
 
