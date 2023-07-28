@@ -1,5 +1,6 @@
-import psycopg2 as pg
+import psycopg as pg
 from musicbrainz_bot import config
+import pytest
 
 
 def make_connection(use_test_db: bool) -> bool:
@@ -9,7 +10,8 @@ def make_connection(use_test_db: bool) -> bool:
         URI = config.MB_DB
 
     try:
-        _ = pg.connect(URI)
+        conn = pg.connect(URI)
+        conn.close()
         return True
 
     except Exception:
@@ -29,5 +31,4 @@ def test_DB_connection() -> None:
 
 
 if __name__ == "__main__":
-    test_TEST_DB_connection()
-    test_DB_connection()
+    pytest.main([__file__])
