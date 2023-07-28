@@ -31,7 +31,7 @@ def create_user(
     username: str = "test_user",
     password: str = "pass",
     privs: int = 256,
-    id: int = _get_free_editor_id(),
+    id: int = 1000,
     use_test_db: bool = True,
 ) -> int:
     """
