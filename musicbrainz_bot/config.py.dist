@@ -1,6 +1,7 @@
-MB_SITE = 'https://test.musicbrainz.org'
-MB_USERNAME = 'xxx'
-MB_PASSWORD = 'xxx'
+# Server
+MB_SITE = "http://localhost:5000"
+MB_USERNAME = "test_user"
+MB_PASSWORD = "pass"
 
 # Test Database
 TEST_USERNAME = "musicbrainz"
@@ -14,6 +15,8 @@ DB_PASSWD = "musicbrainz"
 DB_HOST = "localhost"
 DB_PORT = "5432"
 DB_NAME = "musicbrainz_db"
+
+MUSICBRAINZ_CONTAINER_ID = "musicbrainz"
 
 MB_TEST_DB = (
     f"postgresql://{TEST_USERNAME}:{TEST_PASSWD}@{TEST_HOST}:{TEST_PORT}/{TEST_DB_NAME}"
