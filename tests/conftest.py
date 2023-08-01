@@ -7,6 +7,7 @@ MB_TEST_DB = utils.get_test_db_URI()
 
 @pytest.fixture(scope="session", autouse=True)
 def reset_db(db_conn):
+    # utils.reset_db_docker(db_conn)
     utils.create_user(db_conn)
     yield
     utils.reset_db(db_conn)

@@ -128,6 +128,7 @@ def delete_area(db_conn, area_name: str = "test_area"):
 def reset_db(db_conn):
     delete_user(db_conn, id=1000)
     delete_area(db_conn, area_name="test_area")
+    delete_area(db_conn, area_name="test_area_edit_edited")
 
 
 def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
