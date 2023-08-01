@@ -23,8 +23,9 @@ def browser():
     return browser
 
 
-def _add_area(mb, browser):
-    area = {
+@pytest.fixture(scope="function")
+def area_og():
+    return {
         "name": "test_area",
         "comment": "disambiguation_comment",
         "type": "3",
@@ -39,21 +40,23 @@ def _add_area(mb, browser):
         ],
     }
 
-    edit_note = "Tests new area with name, type, disambiguation, edit note."
+
+def _add_area(area, mb, browser):
+    edit_note = "Tests new area with name, type, disambiguation, ISO 3166-1, ISO 3166-2, ISO 3166-3, URL, edit note."
     area_mbid = mb.add_area(area, edit_note=edit_note)
 
     return area_mbid
 
 
-def test_add_area(mb_client, browser, reset_db):
+def test_add_area(mb_client, browser, reset_db, area_og):
     try:
-        area_mbid = _add_area(mb_client, browser)
+        area_mbid = _add_area(area_og, mb_client, browser)
         assert area_mbid is not None, "Area MBID is None"
         print(
             f"""Area Generated with MBID: {area_mbid}\nLink: http://localhost:5000/area/{area_mbid}"""
         )
     except Exception as e:
-        pytest.fail(str(e))
+        assert False, f"Failed to add area: {e}"
 
 
 if __name__ == "__main__":
