@@ -53,7 +53,7 @@ def test_add_area(mb_client, browser, reset_db, area_og):
         area_mbid = _add_area(area_og, mb_client, browser)
         assert area_mbid is not None, "Area MBID is None"
         print(
-            f"""Area Generated with MBID: {area_mbid}\nLink: http://localhost:5000/area/{area_mbid}"""
+            f"""Area Generated with MBID: {area_mbid}\nLink: {cfg.MB_SITE}/area/{area_mbid}"""
         )
     except Exception as e:
         assert False, f"Failed to add area: {e}"
