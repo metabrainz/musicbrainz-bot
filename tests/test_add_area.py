@@ -28,7 +28,7 @@ def area_og():
     return {
         "name": "test_area",
         "comment": "disambiguation_comment",
-        "type": "3",
+        "type_id": "3",
         "iso_3166_1": ["XX"],
         "iso_3166_2": ["XX-A"],
         "iso_3166_3": ["XXXA"],

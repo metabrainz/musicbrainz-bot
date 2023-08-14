@@ -285,7 +285,7 @@ class MusicBrainzClient(object):
             area = {
                 "name": "foo",
                 "comment": "bar", #a.k.a disambiguation
-                "type": "3",
+                "type_id": "3",
                 "iso_3166_1": None,
                 "iso_3166_2": None,
                 "iso_3166_3": ["XXAM"],
