@@ -57,38 +57,74 @@ def create_user(
     return id
 
 
+# def delete_user(
+#     db_conn,
+#     id: int,
+# ) -> int:
+#     """
+#     Deletes a user on the database with the given id.
+#     """
+#     cur = db_conn.cursor()
+#     query = "DELETE FROM editor WHERE id = %s;"
+#     values = (id,)
+#     cur.execute(query, values)
+
+#     cur.close()
+
+#     return id
+
+
 def delete_user(
     db_conn,
-    id: int,
+    id: int = 1000,
 ) -> int:
     """
-    Deletes a user on the database with the given id.
+    Deletes a user on the database with the given username.
     """
+
     cur = db_conn.cursor()
-    query = "DELETE FROM editor WHERE id = %s;"
-    values = (id,)
-    cur.execute(query, values)
+    del_query = """
+    DELETE from edit_area where edit = ANY (SELECT edit FROM edit where editor = 1000);
+    DELETE from edit_data where edit = ANY (SELECT edit FROM edit where editor = 1000);
+    DELETE from edit_note where edit = ANY (SELECT edit FROM edit where editor = 1000);
+    DELETE from edit_url where edit = ANY (SELECT edit FROM edit where editor = 1000);
+    DELETE FROM edit where editor = 1000;
+    DELETE FROM editor where ID = 1000;
+    """
 
+    cur.execute(del_query)
     cur.close()
-
     return id
 
 
+def delete_area(db_conn, area_name: str = "test_area"):
+    """
+    Deletes an area on the database with the given area ID.
+    """
+
+    cur = db_conn.cursor()
+
+    area_id_query = """SELECT id from area where name=%s;"""
+    cur.execute(area_id_query, (area_name,))
+    area_id = cur.fetchone()[0]
+
+    del_query = """
+    delete from iso_3166_1 where area = %s;
+    delete from iso_3166_2 where area = %s;
+    delete from iso_3166_3 where area = %s;
+    delete from l_area_url where entity0 = %s;
+    delete from area where id = %s;
+    """
+
+    values = (area_id, area_id, area_id, area_id, area_id)
+
+    cur.execute(del_query, values)
+    cur.close()
+
+
 def reset_db(db_conn):
-    try:
-        start = perf_counter()
-        system(
-            f'sudo docker exec {cfg.MUSICBRAINZ_CONTAINER_ID} "script/create_test_db.sh"'
-        )
-        create_user(db_conn)
-
-        end = perf_counter()
-
-        print(f"Database reset in {round(end - start, 2)} seconds")
-        return True
-
-    except Exception as e:
-        raise Exception(f"Failed to reset database: {e}")
+    delete_user(db_conn, id=1000)
+    delete_area(db_conn, area_name="test_area")
 
 
 def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
@@ -113,3 +149,20 @@ def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
 
     response = requests.get(url, headers=headers, params=params)
     return response.json()
+
+
+def reset_db_docker(db_conn):
+    try:
+        start = perf_counter()
+        system(
+            f'sudo docker exec {cfg.MUSICBRAINZ_CONTAINER_ID} "script/create_test_db.sh"'
+        )
+        create_user(db_conn)
+
+        end = perf_counter()
+
+        print(f"Database reset in {round(end - start, 2)} seconds")
+        return True
+
+    except Exception as e:
+        raise Exception(f"Failed to reset database: {e}")

@@ -6,7 +6,9 @@ from musicbrainz_bot import config as cfg
 
 @pytest.fixture(scope="session", autouse=True)
 def reset_db(db_conn):
-    return utils.reset_db(db_conn)
+    utils.create_user(db_conn)
+    yield
+    utils.reset_db(db_conn)
 
 
 @pytest.fixture(scope="session")
