@@ -4,6 +4,7 @@ from musicbrainz_bot.editing import MusicBrainzClient
 import musicbrainz_bot.config as cfg
 import mechanize
 import pytest
+import tests.utils as utils
 
 
 @pytest.fixture(scope="function")
@@ -29,12 +30,16 @@ def area_og():
         "name": "test_area",
         "comment": "disambiguation_comment",
         "type_id": "3",
-        "iso_3166_1": ["XX"],
-        "iso_3166_2": ["XX-A"],
-        "iso_3166_3": ["XXXA"],
+        "iso_3166_1": ["XX", "YY"],
+        "iso_3166_2": ["XX-A", "XX-B"],
+        "iso_3166_3": ["XXXA", "XXXB"],
         "url": [
             {
                 "text": "https://www.wikidata.org/wiki/Q152",
+                "link_type_id": 358,
+            },
+            {
+                "text": "https://www.wikidata.org/wiki/Q153",
                 "link_type_id": 358,
             },
         ],
@@ -49,14 +54,67 @@ def _add_area(area, mb, browser):
 
 
 def test_add_area(mb_client, browser, reset_db, area_og):
+    area_types = {
+        "1": "Country",
+        "2": "Subdivision",
+        "3": "City",
+        "4": "Municipality",
+        "5": "District",
+        "6": "Island",
+        "7": "County",
+    }
+
+    link_type_ids = {"wikidata": "358", "geonames": "713"}
+
     try:
         area_mbid = _add_area(area_og, mb_client, browser)
-        assert area_mbid is not None, "Area MBID is None"
+        posted_data = utils.get_entity_json(area_mbid, "area")
+
+        assert area_mbid is not None, "Area MBID is None"  # area added?
+        assert (
+            posted_data["id"] == area_mbid
+        ), "Area MBID is incorrect"  # area MBID correct?
+
+        assert (
+            posted_data["name"] == area_og["name"]
+        ), "Area name is incorrect"  # area name correct?
+
+        assert (
+            posted_data["disambiguation"] == area_og["comment"]
+        ), "Area disambiguation is incorrect"  # area comment correct?
+
+        assert (
+            posted_data["type"] == area_types[area_og["type_id"]]
+        ), "Area type is incorrect"  # area type correct?
+
+        assert (
+            posted_data["iso-3166-1-codes"] == area_og["iso_3166_1"]
+        ), "Area ISO 3166-1 is incorrect"  # area ISO 3166-1 correct?
+
+        assert (
+            posted_data["iso-3166-2-codes"] == area_og["iso_3166_2"]
+        ), "Area ISO 3166-2 is incorrect"  # area ISO 3166-2 correct?
+
+        assert (
+            posted_data["iso-3166-3-codes"] == area_og["iso_3166_3"]
+        ), "Area ISO 3166-3 is incorrect"  # area ISO 3166-3 correct?
+
+        for original, received in zip(area_og["url"], posted_data["relations"]):
+            assert (
+                received["url"]["resource"] == original["text"]
+            ), "Area URL is incorrect"  # area URL correct?
+            try:
+                assert (
+                    received["type"] == link_type_ids[original["link_type_id"]]
+                ), "Area URL link type is incorrect"  # area URL link type correct?
+            except KeyError:
+                pass
+
         print(
             f"""Area Generated with MBID: {area_mbid}\nLink: {cfg.MB_SITE}/area/{area_mbid}"""
         )
     except Exception as e:
-        assert False, f"Failed to add area: {e}"
+        assert False, f"{e}"
 
 
 if __name__ == "__main__":

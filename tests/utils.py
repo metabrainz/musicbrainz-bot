@@ -1,6 +1,7 @@
 import musicbrainz_bot.config as cfg
 from os import system as system
 from time import perf_counter
+import requests
 
 """
 Defines some utility functions for testing on the musicbrainz_test database.
@@ -88,3 +89,27 @@ def reset_db(db_conn):
 
     except Exception as e:
         raise Exception(f"Failed to reset database: {e}")
+
+
+def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
+    """Returns a dictionary containing the JSON response from the MusicBrainz API for the given MBID and entity type.
+
+    Args:
+        mbid (str): MusicBrainz ID of the entity.
+        entity_type (str): entity type. One of "area", "artist", "event", "instrument", "label", "place", "recording", "release", "release-group", "series", "work", "url", "genre", "collection".
+        payload (dict, optional): optional arguments. Defaults to {}.
+
+    Returns:
+        dict: A dictionary containing the JSON response from the MusicBrainz API for the given MBID and entity type.
+    """
+    url = f"{cfg.MB_SITE}/ws/2/{entity_type}/{mbid}"
+    headers = {
+        "mb-set-database": "TEST",
+    }
+    params = {
+        "fmt": "json",
+        "inc": "url-rels",
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    return response.json()
