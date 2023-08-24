@@ -82,18 +82,23 @@ def delete_user(
     Deletes a user on the database with the given username.
     """
 
-    cur = db_conn.cursor()
-    del_query = """
-    DELETE from edit_area where edit = ANY (SELECT edit FROM edit where editor = 1000);
-    DELETE from edit_data where edit = ANY (SELECT edit FROM edit where editor = 1000);
-    DELETE from edit_note where edit = ANY (SELECT edit FROM edit where editor = 1000);
-    DELETE from edit_url where edit = ANY (SELECT edit FROM edit where editor = 1000);
-    DELETE FROM edit where editor = 1000;
-    DELETE FROM editor where ID = 1000;
-    """
+    try:
+        cur = db_conn.cursor()
+        del_query = """
+        DELETE from edit_area where edit = ANY (SELECT edit FROM edit where editor = 1000);
+        DELETE from edit_data where edit = ANY (SELECT edit FROM edit where editor = 1000);
+        DELETE from edit_note where edit = ANY (SELECT edit FROM edit where editor = 1000);
+        DELETE from edit_url where edit = ANY (SELECT edit FROM edit where editor = 1000);
+        DELETE FROM edit where editor = 1000;
+        DELETE FROM editor where ID = 1000;
+        """
 
-    cur.execute(del_query)
-    cur.close()
+        cur.execute(del_query)
+        cur.close()
+
+    except Exception as e:
+        raise (e)
+
     return id
 
 
@@ -101,25 +106,33 @@ def delete_area(db_conn, area_name: str = "test_area"):
     """
     Deletes an area on the database with the given area ID.
     """
+    try:
+        cur = db_conn.cursor()
 
-    cur = db_conn.cursor()
+        area_id_query = """SELECT id from area where name=%s;"""
+        cur.execute(area_id_query, (area_name,))
 
-    area_id_query = """SELECT id from area where name=%s;"""
-    cur.execute(area_id_query, (area_name,))
-    area_id = cur.fetchone()[0]
+        try:
+            area_id = cur.fetchone()[0]
 
-    del_query = """
-    delete from iso_3166_1 where area = %s;
-    delete from iso_3166_2 where area = %s;
-    delete from iso_3166_3 where area = %s;
-    delete from l_area_url where entity0 = %s;
-    delete from area where id = %s;
-    """
+        except Exception as e:
+            raise (e)
 
-    values = (area_id, area_id, area_id, area_id, area_id)
+        del_query = """
+        delete from iso_3166_1 where area = %s;
+        delete from iso_3166_2 where area = %s;
+        delete from iso_3166_3 where area = %s;
+        delete from l_area_url where entity0 = %s;
+        delete from area where id = %s;
+        """
 
-    cur.execute(del_query, values)
-    cur.close()
+        values = (area_id, area_id, area_id, area_id, area_id)
+
+        cur.execute(del_query, values)
+        cur.close()
+
+    except Exception as e:
+        raise (e)
 
 
 def reset_db(db_conn):
