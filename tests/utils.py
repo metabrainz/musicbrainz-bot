@@ -79,7 +79,7 @@ def delete_user(
     id: int = 1000,
 ) -> int:
     """
-    Deletes a user on the database with the given username.
+    Deletes a user on the database with the given ID.
     """
 
     try:
@@ -104,7 +104,7 @@ def delete_user(
 
 def delete_area(db_conn, area_name: str = "test_area"):
     """
-    Deletes an area on the database with the given area ID.
+    Deletes an area on the database with the given area name.
     """
     try:
         cur = db_conn.cursor()
