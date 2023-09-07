@@ -25,7 +25,7 @@ def browser():
 
 
 @pytest.fixture(scope="function")
-def area_og():
+def area_seed():
     return {
         "name": "test_area",
         "comment": "disambiguation_comment",
@@ -53,7 +53,7 @@ def _add_area(area, mb, browser):
     return area_mbid
 
 
-def test_add_area(mb_client, browser, reset_db, area_og):
+def test_add_area(mb_client, browser, reset_db, area_seed):
     area_types = {
         "1": "Country",
         "2": "Subdivision",
@@ -67,46 +67,42 @@ def test_add_area(mb_client, browser, reset_db, area_og):
     link_type_ids = {"wikidata": "358", "geonames": "713"}
 
     try:
-        area_mbid = _add_area(area_og, mb_client, browser)
+        area_mbid = _add_area(area_seed, mb_client, browser)
         posted_data = utils.get_entity_json(area_mbid, "area")
 
-        assert area_mbid is not None, "Area MBID is None"  # area added?
-        assert (
-            posted_data["id"] == area_mbid
-        ), "Area MBID is incorrect"  # area MBID correct?
+        assert area_mbid is not None, "Area MBID is None"
+        assert posted_data["id"] == area_mbid, "Area MBID is incorrect"
+
+        assert posted_data["name"] == area_seed["name"], "Area name is incorrect"
 
         assert (
-            posted_data["name"] == area_og["name"]
-        ), "Area name is incorrect"  # area name correct?
+            posted_data["disambiguation"] == area_seed["comment"]
+        ), "Area disambiguation is incorrect"
 
         assert (
-            posted_data["disambiguation"] == area_og["comment"]
-        ), "Area disambiguation is incorrect"  # area comment correct?
+            posted_data["type"] == area_types[area_seed["type_id"]]
+        ), "Area type is incorrect"
 
         assert (
-            posted_data["type"] == area_types[area_og["type_id"]]
-        ), "Area type is incorrect"  # area type correct?
+            posted_data["iso-3166-1-codes"] == area_seed["iso_3166_1"]
+        ), "Area ISO 3166-1 is incorrect"
 
         assert (
-            posted_data["iso-3166-1-codes"] == area_og["iso_3166_1"]
-        ), "Area ISO 3166-1 is incorrect"  # area ISO 3166-1 correct?
+            posted_data["iso-3166-2-codes"] == area_seed["iso_3166_2"]
+        ), "Area ISO 3166-2 is incorrect"
 
         assert (
-            posted_data["iso-3166-2-codes"] == area_og["iso_3166_2"]
-        ), "Area ISO 3166-2 is incorrect"  # area ISO 3166-2 correct?
+            posted_data["iso-3166-3-codes"] == area_seed["iso_3166_3"]
+        ), "Area ISO 3166-3 is incorrect"
 
-        assert (
-            posted_data["iso-3166-3-codes"] == area_og["iso_3166_3"]
-        ), "Area ISO 3166-3 is incorrect"  # area ISO 3166-3 correct?
-
-        for original, received in zip(area_og["url"], posted_data["relations"]):
+        for original, received in zip(area_seed["url"], posted_data["relations"]):
             assert (
                 received["url"]["resource"] == original["text"]
-            ), "Area URL is incorrect"  # area URL correct?
+            ), "Area URL is incorrect"
             try:
                 assert (
                     received["type"] == link_type_ids[original["link_type_id"]]
-                ), "Area URL link type is incorrect"  # area URL link type correct?
+                ), "Area URL link type is incorrect"
             except KeyError:
                 pass
 
