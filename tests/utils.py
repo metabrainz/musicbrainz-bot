@@ -2,10 +2,22 @@ import musicbrainz_bot.config as cfg
 from os import system as system
 from time import perf_counter
 import requests
+import psycopg2 as pg
+
 
 """
 Defines some utility functions for testing on the musicbrainz_test database.
 """
+
+
+def get_test_db_URI():
+    MB_TEST_DB = f"postgresql://{cfg.TEST_DB_USERNAME}:{cfg.TEST_DB_PASSWD}@{cfg.TEST_DB_HOST}:{cfg.TEST_DB_PORT}/{cfg.TEST_DB_NAME}"
+    return MB_TEST_DB
+
+
+def get_db_URI():
+    MB_DB = f"postgresql://{cfg.DB_USERNAME}:{cfg.DB_PASSWD}@{cfg.DB_HOST}:{cfg.DB_PORT}/{cfg.DB_NAME}"
+    return MB_DB
 
 
 def _get_free_editor_id(db_conn):
@@ -40,9 +52,7 @@ def create_user(
     Creates a user on the database with the given username, password, and privileges.
     """
     password = "{CLEARTEXT}pass"
-    # db_URI = cfg.MB_TEST_DB if use_test_db else cfg.MB_DB
 
-    # with pg.connect(db_URI) as conn:
     cur = db_conn.cursor()
     query = (
         "INSERT INTO editor "
@@ -55,23 +65,6 @@ def create_user(
     cur.close()
 
     return id
-
-
-# def delete_user(
-#     db_conn,
-#     id: int,
-# ) -> int:
-#     """
-#     Deletes a user on the database with the given id.
-#     """
-#     cur = db_conn.cursor()
-#     query = "DELETE FROM editor WHERE id = %s;"
-#     values = (id,)
-#     cur.execute(query, values)
-
-#     cur.close()
-
-#     return id
 
 
 def delete_user(
@@ -164,13 +157,18 @@ def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
     return response.json()
 
 
-def reset_db_docker(db_conn):
+def reset_db_docker(create_new_user: bool = False):
+    """Resets the musicbrainz_test database by running the script/create_test_db.sh script in the musicbrainz docker container."""
+    MB_TEST_DB = get_test_db_URI()
+
     try:
         start = perf_counter()
         system(
             f'sudo docker exec {cfg.MUSICBRAINZ_CONTAINER_ID} "script/create_test_db.sh"'
         )
-        create_user(db_conn)
+        if create_new_user:
+            with pg.connect(MB_TEST_DB) as conn:
+                create_user(conn)
 
         end = perf_counter()
 

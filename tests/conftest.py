@@ -1,7 +1,8 @@
 import pytest
 import tests.utils as utils
 import psycopg2 as pg
-from musicbrainz_bot import config as cfg
+
+MB_TEST_DB = utils.get_test_db_URI()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -13,7 +14,7 @@ def reset_db(db_conn):
 
 @pytest.fixture(scope="session")
 def db_conn():
-    conn = pg.connect(cfg.MB_TEST_DB)
+    conn = pg.connect(MB_TEST_DB)
     conn.autocommit = True
 
     yield conn

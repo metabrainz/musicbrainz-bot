@@ -4,10 +4,10 @@ MB_USERNAME = "test_user"
 MB_PASSWORD = "pass"
 
 # Test Database
-TEST_USERNAME = "musicbrainz"
-TEST_PASSWD = "musicbrainz"
-TEST_HOST = "localhost"
-TEST_PORT = "5432"
+TEST_DB_USERNAME = "musicbrainz"
+TEST_DB_PASSWD = "musicbrainz"
+TEST_DB_HOST = "localhost"
+TEST_DB_PORT = "5432"
 TEST_DB_NAME = "musicbrainz_test"
 
 DB_USERNAME = "musicbrainz"
@@ -18,22 +18,15 @@ DB_NAME = "musicbrainz_db"
 
 MUSICBRAINZ_CONTAINER_ID = "musicbrainz"
 
-MB_TEST_DB = (
-    f"postgresql://{TEST_USERNAME}:{TEST_PASSWD}@{TEST_HOST}:{TEST_PORT}/{TEST_DB_NAME}"
-)
-MB_DB = (
-    f"postgresql://{DB_USERNAME}:{DB_PASSWD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
-
-BOT_SCHEMA_DB = 'mbbot'
+BOT_SCHEMA_DB = "mbbot"
 
 WWW_USER_AGENT = None
 
-AWS_KEY = '...'
-AWS_SECRET_KEY = '...'
-AWS_ASSOCIATE_TAG = '...'
+AWS_KEY = "..."
+AWS_SECRET_KEY = "..."
+AWS_ASSOCIATE_TAG = "..."
 
-DISCOGS_OAUTH_CONSUMER_KEY = '...'
-DISCOGS_OAUTH_CONSUMER_SECRET = '...'
-DISCOGS_OAUTH_TOKEN_KEY = '...'
-DISCOGS_OAUTH_TOKEN_SECRET = '...'
+DISCOGS_OAUTH_CONSUMER_KEY = "..."
+DISCOGS_OAUTH_CONSUMER_SECRET = "..."
+DISCOGS_OAUTH_TOKEN_KEY = "..."
+DISCOGS_OAUTH_TOKEN_SECRET = "..."
