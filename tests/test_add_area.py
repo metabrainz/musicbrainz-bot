@@ -16,15 +16,6 @@ def mb_client():
 
 
 @pytest.fixture(scope="function")
-def browser():
-    browser = mechanize.Browser()
-    browser.set_handle_robots(False)
-    browser.set_debug_redirects(False)
-    browser.set_debug_http(False)
-    return browser
-
-
-@pytest.fixture(scope="function")
 def area_seed():
     return {
         "name": "test_area",
@@ -46,14 +37,14 @@ def area_seed():
     }
 
 
-def _add_area(area, mb, browser):
+def _add_area(area, mb, ):
     edit_note = "Tests new area with name, type, disambiguation, ISO 3166-1, ISO 3166-2, ISO 3166-3, URL, edit note."
     area_mbid = mb.add_area(area, edit_note=edit_note)
 
     return area_mbid
 
 
-def test_add_area(mb_client, browser, reset_db, area_seed):
+def test_add_area(mb_client, reset_db, area_seed):
     area_types = {
         "1": "Country",
         "2": "Subdivision",
@@ -67,7 +58,7 @@ def test_add_area(mb_client, browser, reset_db, area_seed):
     link_type_ids = {"wikidata": "358", "geonames": "713"}
 
     try:
-        area_mbid = _add_area(area_seed, mb_client, browser)
+        area_mbid = _add_area(area_seed, mb_client)
         posted_data = utils.get_entity_json(area_mbid, "area")
 
         assert area_mbid is not None, "Area MBID is None"
