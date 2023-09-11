@@ -155,25 +155,3 @@ def get_entity_json(mbid: str, entity_type: str, payload: dict = {""}) -> dict:
 
     response = requests.get(url, headers=headers, params=params)
     return response.json()
-
-
-def reset_db_docker(create_new_user: bool = False):
-    """Resets the musicbrainz_test database by running the script/create_test_db.sh script in the musicbrainz docker container."""
-    MB_TEST_DB = get_test_db_URI()
-
-    try:
-        start = perf_counter()
-        system(
-            f'sudo docker exec {cfg.MUSICBRAINZ_CONTAINER_ID} "script/create_test_db.sh"'
-        )
-        if create_new_user:
-            with pg.connect(MB_TEST_DB) as conn:
-                create_user(conn)
-
-        end = perf_counter()
-
-        print(f"Database reset in {round(end - start, 2)} seconds")
-        return True
-
-    except Exception as e:
-        raise Exception(f"Failed to reset database: {e}")
