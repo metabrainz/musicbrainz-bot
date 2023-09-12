@@ -1,8 +1,5 @@
 import musicbrainz_bot.config as cfg
-from os import system as system
-from time import perf_counter
 import requests
-import psycopg2 as pg
 
 
 """
