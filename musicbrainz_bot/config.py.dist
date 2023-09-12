@@ -1,17 +1,30 @@
-MB_SITE = 'https://test.musicbrainz.org'
-MB_USERNAME = 'xxx'
-MB_PASSWORD = 'xxx'
+# Server
+MB_SITE = "http://localhost:5000"
+MB_USERNAME = "test_user"
+MB_PASSWORD = "pass"
 
-MB_DB = 'postgresql://musicbrainz@127.0.0.1:5432/musicbrainz'
-BOT_SCHEMA_DB = 'mbbot'
+# Test Database
+TEST_DB_USERNAME = "musicbrainz"
+TEST_DB_PASSWD = "musicbrainz"
+TEST_DB_HOST = "localhost"
+TEST_DB_PORT = "5432"
+TEST_DB_NAME = "musicbrainz_test"
+
+DB_USERNAME = "musicbrainz"
+DB_PASSWD = "musicbrainz"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "musicbrainz_db"
+
+BOT_SCHEMA_DB = "mbbot"
 
 WWW_USER_AGENT = None
 
-AWS_KEY = '...'
-AWS_SECRET_KEY = '...'
-AWS_ASSOCIATE_TAG = '...'
+AWS_KEY = "..."
+AWS_SECRET_KEY = "..."
+AWS_ASSOCIATE_TAG = "..."
 
-DISCOGS_OAUTH_CONSUMER_KEY = '...'
-DISCOGS_OAUTH_CONSUMER_SECRET = '...'
-DISCOGS_OAUTH_TOKEN_KEY = '...'
-DISCOGS_OAUTH_TOKEN_SECRET = '...'
+DISCOGS_OAUTH_CONSUMER_KEY = "..."
+DISCOGS_OAUTH_CONSUMER_SECRET = "..."
+DISCOGS_OAUTH_TOKEN_KEY = "..."
+DISCOGS_OAUTH_TOKEN_SECRET = "..."
