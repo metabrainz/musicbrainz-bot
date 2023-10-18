@@ -311,6 +311,34 @@ class MusicBrainzClient(object):
 
         return self._extract_mbid("area")
 
+    def edit_area(
+        self, gid: str, area: dict, update: dict, edit_note: str, auto=False
+    ) -> str:
+        """Posts an edit for an existing area based on existing data and update data.
+
+        Args:
+            area (dict): Existing data for the area to be edited. Including gid
+            update (dict): Updated data for the area to be edited. Follows the same structure as the area dict in add_area
+            edit_note (str): edit note
+            auto (bool, optional): Marks if an edit is 'votable' or 'auto-edit'. Defaults to False.
+
+        Returns:
+            str: returns the area MBID of the edited area.
+        """
+
+        update.update({"edit_note": edit_note})
+        area.update(update)
+
+        required_fields = ["name"]
+        payload = create_payload(area, "edit-area", required_fields)
+
+        self.b.open(
+            self.url("/area/%s/edit" % (gid,)),
+            data=urllib.parse.urlencode(payload).encode("utf-8"),
+        )
+
+        return self._extract_mbid("area")
+
     def _as_auto_editor(self, prefix, auto):
         try:
             self.b[prefix + "make_votable"] = [] if auto else ["1"]

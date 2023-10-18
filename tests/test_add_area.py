@@ -2,7 +2,6 @@
 
 from musicbrainz_bot.editing import MusicBrainzClient
 import musicbrainz_bot.config as cfg
-import mechanize
 import pytest
 import tests.utils as utils
 
@@ -37,7 +36,10 @@ def area_seed():
     }
 
 
-def _add_area(area, mb, ):
+def _add_area(
+    area,
+    mb,
+):
     edit_note = "Tests new area with name, type, disambiguation, ISO 3166-1, ISO 3166-2, ISO 3166-3, URL, edit note."
     area_mbid = mb.add_area(area, edit_note=edit_note)
 
