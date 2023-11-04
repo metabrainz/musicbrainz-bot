@@ -39,8 +39,8 @@ def _get_free_editor_id(db_conn):
 
 def create_user(
     db_conn,
-    username: str = "test_user",
-    password: str = "pass",
+    username: str = cfg.MB_USERNAME,
+    password: str = cfg.MB_PASSWORD,
     privs: int = 256,
     id: int = 1000,
     use_test_db: bool = True,
@@ -48,7 +48,7 @@ def create_user(
     """
     Creates a user on the database with the given username, password, and privileges.
     """
-    password = "{CLEARTEXT}pass"
+    password = "{CLEARTEXT}" + password
 
     cur = db_conn.cursor()
     query = (
