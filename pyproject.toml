@@ -1,0 +1,15 @@
+[project]
+name = "musicbrainz-bot"
+version = "2026.5.12"
+requires-python = ">=3.10"
+dependencies = [
+    "mechanize==0.4.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8==6.1.0",
+    "pytest==7.4.2",
+    "psycopg2-binary==2.9.12",
+    "requests==2.31.0",
+]
