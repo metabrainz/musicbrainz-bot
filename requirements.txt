@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml -o requirements.txt
 html5lib==1.1
     # via mechanize
-mechanize==0.4.8
+mechanize==0.4.10
     # via musicbrainz-bot (pyproject.toml)
 six==1.16.0
     # via html5lib

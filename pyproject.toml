@@ -3,7 +3,7 @@ name = "musicbrainz-bot"
 version = "2026.5.12"
 requires-python = ">=3.10"
 dependencies = [
-    "mechanize==0.4.8",
+    "mechanize==0.4.10",
 ]
 
 [project.optional-dependencies]
